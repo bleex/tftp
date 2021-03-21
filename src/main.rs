@@ -30,6 +30,8 @@ impl Server {
             mut buf,
             mut to_send,
         } = self;
+        // Hardcoded file with argg content (just for test)
+        let out: [u8; 10] = [0, 3, 0, 1, 97, 114, 103, 103, 13, 10];
 
         loop {
             // First we check to see if there's a message we need to echo back.
@@ -45,10 +47,12 @@ impl Server {
                     println!("{}", fname);
                     let tftp_mode: String = std::str::from_utf8(&buf[2+index..]).unwrap().to_string();
                     println!("{}", tftp_mode);
+                    let amt = socket.send_to(&out[..], &peer).await?;
+                    println!("Echoed {}/{} bytes to {}", amt, size, peer);
                 }
 
-                let amt = socket.send_to(&buf[..size], &peer).await?;
-                println!("Echoed {}/{} bytes to {}", amt, size, peer);
+                //let amt = socket.send_to(&buf[..size], &peer).await?;
+                //println!("Echoed {}/{} bytes to {}", amt, size, peer);
             }
 
             // If we're here then `to_send` is `None`, so we take a look for the
